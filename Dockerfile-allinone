@@ -28,10 +28,14 @@ RUN yarn build-only --mode=all
 
 # ---------- Stage 2: 后端编译 ----------
 FROM maven:3.9-eclipse-temurin-17-alpine AS backend
+# 默认 false: 使用 Maven 中央仓库(GitHub Actions 海外环境稳定)
+# 国内服务器手动构建时可传 --build-arg USE_ALIYUN_MIRROR=true 加速
+ARG USE_ALIYUN_MIRROR=false
 WORKDIR /app/backend
-COPY maven-settings.xml /root/.m2/settings.xml
 COPY backend-main/ ./
-# 跳过测试加快构建; 阿里云镜像加速依赖下载(见 maven-settings.xml)
+COPY maven-settings.xml /tmp/maven-settings.xml
+RUN if [ "$USE_ALIYUN_MIRROR" = "true" ]; then cp /tmp/maven-settings.xml /root/.m2/settings.xml; fi
+# 跳过测试加快构建
 RUN mvn clean package -DskipTests -q
 
 # ---------- Stage 3: 运行时 ----------
