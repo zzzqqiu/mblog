@@ -15,7 +15,7 @@
         </div>
         <img :src="avatarUrl" class="w-16 h-16 rounded-lg border-2 border-white/90 object-cover shadow" alt="avatar" />
       </div>
-      <!-- 主题切换 -->
+      <!-- 主题切换 + 发布 + 管理 -->
       <div class="absolute left-4 top-4 flex items-center gap-2">
         <div
           class="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-sm w-8 h-8 rounded-full cursor-pointer flex items-center justify-center transition"
@@ -32,6 +32,15 @@
         >
           <div class="i-carbon:camera text-base"></div>
           <span>{{ showInput ? '收起' : '发布' }}</span>
+        </div>
+        <!-- 后台管理入口 -->
+        <div
+          class="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-sm px-4 py-1.5 rounded-full cursor-pointer flex items-center gap-1 transition"
+          v-if="userinfo.token"
+          @click="goSettings"
+        >
+          <div class="i-carbon:settings text-base"></div>
+          <span>管理</span>
         </div>
       </div>
     </header>
@@ -85,9 +94,15 @@ import { onMounted, reactive, computed } from 'vue';
 dayjs.extend(relativeTime)
 
 const userinfo = useStorage('userinfo', { token: '', userId: 0 })
+const router = useRouter()
+const goSettings = () => {
+  router.push('/settings')
+}
 
-const coverUrl =
+// 封面图:优先使用后台配置的 BANNER_URL,否则用默认图
+const coverUrl = ref(
   'https://images.unsplash.com/photo-1711299253442-de19d4dacaae?q=80&w=3500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+)
 
 interface State {
   memos: Array<MemoDTO>
@@ -155,6 +170,16 @@ onMounted(async () => {
   const { data, error } = await useMyFetch('/api/user/current').post().json()
   if (!error.value) {
     user.value = data.value
+  }
+
+  // 读取后台配置的封面图
+  const { data: cfg, error: cfgErr } = await useMyFetch('/api/sysConfig/').get().json()
+  if (!cfgErr.value) {
+    const configData = cfg.value as Array<{ key: string; value: string }>
+    const banner = configData.find((r) => r.key === 'BANNER_URL')?.value
+    if (banner) {
+      coverUrl.value = banner
+    }
   }
 })
 

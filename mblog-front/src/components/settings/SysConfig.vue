@@ -105,6 +105,12 @@
             </template>
           </n-collapse-item>
           <n-collapse-item title="外观设置" name="appearance">
+            <n-form-item label="朋友圈封面图">
+              <n-input
+                v-model:value="formValue.BANNER_URL"
+                placeholder="封面图链接(图床/任意图片URL),留空使用默认封面"
+              />
+            </n-form-item>
             <n-form-item label="自定义CSS">
               <n-input v-model:value="formValue.CUSTOM_CSS" placeholder="输入自定义CSS" type="textarea" :rows="5" />
             </n-form-item>
@@ -306,6 +312,10 @@ const saveConfig = async () => {
   items.push({
     key: 'THUMBNAIL_SIZE',
     value: formValue.THUMBNAIL_SIZE,
+  })
+  items.push({
+    key: 'BANNER_URL',
+    value: formValue.BANNER_URL,
   })
   items.push({
     key: 'ANONYMOUS_COMMENT',

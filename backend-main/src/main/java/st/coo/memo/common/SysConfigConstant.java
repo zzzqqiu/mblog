@@ -16,6 +16,7 @@ public class SysConfigConstant {
     public final static String CUSTOM_CSS = "CUSTOM_CSS";
     public final static String CUSTOM_JAVASCRIPT = "CUSTOM_JAVASCRIPT";
     public final static String THUMBNAIL_SIZE = "THUMBNAIL_SIZE";
+    public final static String BANNER_URL = "BANNER_URL";
     public final static String ANONYMOUS_COMMENT = "ANONYMOUS_COMMENT";
     public final static String COMMENT_APPROVED = "COMMENT_APPROVED";
     public final static String WEB_HOOK_URL = "WEB_HOOK_URL";

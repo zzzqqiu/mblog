@@ -53,6 +53,7 @@ public class SysConfigController {
                 SysConfigConstant.CUSTOM_CSS,
                 SysConfigConstant.CUSTOM_JAVASCRIPT,
                 SysConfigConstant.THUMBNAIL_SIZE,
+                SysConfigConstant.BANNER_URL,
                 SysConfigConstant.ANONYMOUS_COMMENT,
                 SysConfigConstant.COMMENT_APPROVED
 
