@@ -334,6 +334,13 @@ const saveConfig = async () => {
     value: formValue.PUSH_OFFICIAL_SQUARE,
   })
 
+  // value 为 undefined/null 时兜底为空字符串,防止后端 NOT NULL 约束报错
+  items.forEach((item: any) => {
+    if (item.value === undefined || item.value === null) {
+      item.value = ''
+    }
+  })
+
   const { error } = await useMyFetch('/api/sysConfig/save').post({ items }).json()
   if (!error.value) {
     const { message } = createDiscreteApi(['message'])

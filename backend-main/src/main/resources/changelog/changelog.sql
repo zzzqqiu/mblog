@@ -219,3 +219,6 @@ alter table t_memo add column `source` varchar(30) default  'web';
 
 -- changeset jerry:31
 INSERT INTO t_sys_config (`key`, value, default_value) VALUES('PUSH_OFFICIAL_SQUARE', '', 'false');
+
+-- changeset jerry:32
+INSERT INTO t_sys_config (`key`, value, default_value) VALUES('BANNER_URL', '', '');

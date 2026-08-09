@@ -18,12 +18,13 @@
       <!-- 主题切换 + 发布 + 管理 -->
       <div class="absolute left-4 top-4 flex items-center gap-2">
         <div
-          class="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-sm w-8 h-8 rounded-full cursor-pointer flex items-center justify-center transition"
+          class="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-sm px-4 py-1.5 rounded-full cursor-pointer flex items-center gap-1 transition"
           :title="isDark ? '切换亮色模式' : '切换暗色模式'"
           @click="toggleTheme"
         >
           <div class="i-carbon:moon text-base" v-if="!isDark"></div>
           <div class="i-carbon:sun text-base" v-else></div>
+          <span>{{ isDark ? '日间' : '夜间' }}</span>
         </div>
         <div
           class="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-sm px-4 py-1.5 rounded-full cursor-pointer flex items-center gap-1 transition"

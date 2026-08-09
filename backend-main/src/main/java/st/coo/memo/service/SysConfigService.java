@@ -111,7 +111,17 @@ public class SysConfigService {
         for (SysConfigDto item : saveSysConfigRequest.getItems()) {
             TSysConfig sysConfig = new TSysConfig();
             BeanUtils.copyProperties(item, sysConfig);
-            sysConfigMapper.update(sysConfig);
+            // value 为空时兜底空字符串,避免 NULL 违反 NOT NULL 约束
+            if (sysConfig.getValue() == null) {
+                sysConfig.setValue("");
+            }
+            // 记录不存在时插入(如新增配置项 BANNER_URL),否则更新
+            TSysConfig exist = sysConfigMapper.selectOneById(sysConfig.getKey());
+            if (exist == null) {
+                sysConfigMapper.insert(sysConfig);
+            } else {
+                sysConfigMapper.update(sysConfig);
+            }
         }
     }
 
