@@ -56,3 +56,19 @@ npm run dev        # http://127.0.0.1:3333
 ```
 
 > 开发模式自动使用 mock 数据,无需后端即可预览主题效果。
+
+## CI 自动构建 (GitHub Actions)
+
+推送代码到 `main` 后自动构建镜像并推送到 Docker Hub(`.github/workflows/docker-build-push.yml`)。
+
+首次使用需在 GitHub 仓库 **Settings → Secrets and variables → Actions** 添加：
+
+| Secret | 值 |
+|--------|----|
+| `DOCKERHUB_USERNAME` | withrubia |
+| `DOCKERHUB_TOKEN` | Docker Hub Personal Access Token |
+
+之后每次 `git push`，以下镜像自动更新：
+
+- `withrubia/mblog-allinone:friends` (+latest) — 前端含朋友圈主题 + 后端
+- `withrubia/mblog-front:friends` (+latest) — 纯前端
