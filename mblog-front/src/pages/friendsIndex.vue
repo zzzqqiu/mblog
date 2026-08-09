@@ -5,8 +5,8 @@
 <template>
   <div class="friends-page">
     <!-- 顶部封面:微信朋友圈风格头部 -->
-    <header class="cover relative overflow-hidden">
-      <img class="cover-img w-full h-[280px] object-cover" :src="coverUrl" @error="onCoverError" alt="" />
+    <header class="cover relative overflow-hidden h-[280px]">
+      <img class="cover-img absolute inset-0 w-full h-full object-cover block" :src="coverUrl" @error="onCoverError" alt="" />
       <div class="cover-mask absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10"></div>
       <div class="absolute right-4 bottom-4 flex items-end gap-3">
         <div class="pb-1">
