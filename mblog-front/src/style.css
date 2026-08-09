@@ -1,0 +1,143 @@
+/* @import 'https://cdn.staticfile.org/lxgw-wenkai-screen-webfont/1.7.0/lxgwwenkaiscreen.min.css'; */
+
+
+@font-face {
+  font-family: MiSans;
+  src: url('https://yoyo.s3.bitiful.net/misan-normal.ttf');
+}
+html {
+  height: 100%;
+  background-color: #f4f4f5;
+  font-size: 16px;
+}
+
+
+html.dark {
+  background-color: #000 !important;
+}
+
+* {
+  /* font-family: LXGW WenKai Screen, sans-serif; */
+  font-family: MiSans, sans-serif;
+}
+
+.md-content {
+  font-size: 1rem;
+  line-height: 2rem;
+}
+
+.md-content a:any-link {
+  color: rgb(156, 163, 175);
+}
+[v-cloak] {
+  display: none;
+}
+
+.md-content pre {
+  /* font-family: 'Courier New', Courier, monospace; */
+  white-space: pre-wrap; /* css-3 */
+  word-wrap: break-word; /* InternetExplorer5.5+ */
+  white-space: -moz-pre-wrap; /* Mozilla,since1999 */
+  white-space: -pre-wrap; /* Opera4-6 */
+  white-space: -o-pre-wrap; /* Opera7 */
+
+  background-color: #000;
+  color: wheat;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+.md-content code {
+  font-family: LXGW WenKai Screen, sans-serif;
+  font-size: 0.9rem;
+}
+
+.md-content p {
+  margin: 0 0 0.25rem 0;
+}
+.md-content ul,
+.md-content ol {
+  margin: 0 0 0.25rem 0;
+}
+
+.md-content li > code,
+.md-content p > code,
+.md-content td > code {
+  padding: 2px 5px;
+  border-radius: 2px;
+  border: 1px solid #ccc;
+  margin: 0 4px;
+}
+
+.md-content .mentioned {
+  display: inline-block;
+  margin: 0 4px;
+  text-decoration: underline;
+  text-decoration-color: teal;
+}
+
+.md-content .mentioned.self {
+  color: red;
+}
+
+.md-content .mentioned:hover {
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.md-content img {
+  max-width: 300px;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+html.dark .men {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark .n-tabs-tab--active .men {
+  color: var(--n-tab-text-color-active) !important;
+}
+
+.n-tabs-tab--active .men {
+  color: var(--n-tab-text-color-active) !important;
+}
+
+html.dark .n-tabs-nav--bar-type {
+  background-color: black;
+}
+
+.md-content table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.md-content table td,
+.md-content table th {
+  border: 1px solid #ccc;
+  padding: 4px 10px;
+}
+
+.md-content table th {
+  background-color: rgba(158, 188, 226, 0.2);
+  /* color: white; */
+}
+
+.md-content hr {
+  border: 1px solid #dedede;
+  color: #cccccc;
+}
+
+.friend-md *{
+}
+
+.friend-md p{
+  margin: 0 0 0.25rem 0;  
+}
+
+.friend-md a{
+ text-decoration: none;
+ color:#576b95;
+}

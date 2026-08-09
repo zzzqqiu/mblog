@@ -1,0 +1,61 @@
+# ============================================================
+# mBlog All-in-One 镜像 (含朋友圈主题前端)
+#
+# 构建上下文: mblog 仓库根目录(包含 backend-main 和 mblog-front)
+#   docker build -f Dockerfile-allinone -t yourname/mblog-allinone:friends .
+#
+# 运行(免数据库,sqlite版):
+#   docker run -p 38321:38321 -v ${PWD}/mblog:/opt/mblog \
+#     -e DB_TYPE=-sqlite yourname/mblog-allinone:friends
+#
+# 多阶段: 前端构建(node) + 后端编译(maven) + 运行时(openjdk17)
+# ============================================================
+
+# ---------- Stage 1: 前端构建(含朋友圈主题) ----------
+FROM node:18-alpine AS front
+ARG VERSION=v1.0.2
+WORKDIR /app
+RUN corepack enable
+
+COPY mblog-front/package.json mblog-front/yarn.lock ./front/
+WORKDIR /app/front
+RUN yarn install --registry=https://registry.npmmirror.com
+
+COPY mblog-front/ ./
+RUN sed -i 's#REPLACE_VERSION_HERE#'"$VERSION"'#g' .env.all
+# --mode=all : VITE_BASE_URL 为空 + hash 路由,由后端同域托管,无需 nginx
+RUN yarn build-only --mode=all
+
+# ---------- Stage 2: 后端编译 ----------
+FROM maven:3.9-eclipse-temurin-17-alpine AS backend
+WORKDIR /app/backend
+COPY maven-settings.xml /root/.m2/settings.xml
+COPY backend-main/ ./
+# 跳过测试加快构建; 阿里云镜像加速依赖下载(见 maven-settings.xml)
+RUN mvn clean package -DskipTests -q
+
+# ---------- Stage 3: 运行时 ----------
+# openjdk 官方镜像已停止维护,改用 eclipse-temurin
+FROM eclipse-temurin:17-jre-alpine
+# 时区设置
+RUN apk add --no-cache tzdata \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
+# 后端 jar + 配置文件
+COPY --from=backend /app/backend/target/memo-0.0.1-SNAPSHOT.jar /app/memo-0.0.1-SNAPSHOT.jar
+COPY --from=backend /app/backend/target/classes/application.properties /app/
+COPY --from=backend /app/backend/target/classes/application-sqlite.properties /app/
+
+# 前端构建产物
+COPY --from=front /app/front/dist /app/static
+
+ENV JAVA_OPTS="-Xms512m -Xmx512m"
+ENV DB_TYPE=""
+ENV MBLOG_EMBED=true
+
+EXPOSE 38321
+
+# DB_TYPE 环境变量: 空=mysql(需外置数据库), -sqlite=内置sqlite(免数据库)
+CMD ["sh", "-c", "java $JAVA_OPTS -jar /app/memo-0.0.1-SNAPSHOT.jar --spring.config.location=/app/application$DB_TYPE.properties"]

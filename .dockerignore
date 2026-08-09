@@ -1,0 +1,11 @@
+# All-in-One 镜像构建上下文排除项(根目录)
+# 注意: .dockerignore 规则对子目录同样生效
+backend-main/target
+backend-main/.git
+mblog-front/node_modules
+mblog-front/dist
+mblog-front/.git
+.git
+*.log
+.DS_Store
+preview-*.jpg
