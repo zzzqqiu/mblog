@@ -6,14 +6,14 @@
   <div class="friends-page">
     <!-- 顶部封面:微信朋友圈风格头部 -->
     <header class="cover relative overflow-hidden">
-      <img class="cover-img w-full h-[280px] object-cover" :src="coverUrl" alt="" />
+      <img class="cover-img w-full h-[280px] object-cover" :src="coverUrl" @error="onCoverError" alt="" />
       <div class="cover-mask absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10"></div>
       <div class="absolute right-4 bottom-4 flex items-end gap-3">
         <div class="pb-1">
           <div class="text-white text-xl font-bold drop-shadow text-right">{{ displayName }}</div>
           <div class="text-white/80 text-xs text-right mt-1">{{ bio || '分享生活,记录美好' }}</div>
         </div>
-        <img :src="avatarUrl" class="w-16 h-16 rounded-lg border-2 border-white/90 object-cover shadow" alt="avatar" />
+        <img :src="avatarUrl" class="w-16 h-16 rounded-lg border-2 border-white/90 object-cover shadow" @error="user.avatarUrl = ''" alt="avatar" />
       </div>
       <!-- 主题切换 + 发布 + 管理 -->
       <div class="absolute left-4 top-4 flex items-center gap-2">
@@ -100,10 +100,19 @@ const goSettings = () => {
   router.push('/settings')
 }
 
-// 封面图:优先使用后台配置的 BANNER_URL,否则用默认图
-const coverUrl = ref(
+// 封面图:优先本地缓存(mblog_banner_url) → 后台配置 BANNER_URL → 默认图
+const DEFAULT_COVER =
   'https://images.unsplash.com/photo-1711299253442-de19d4dacaae?q=80&w=3500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
-)
+const cachedBanner = useStorage('mblog_banner_url', '')
+const coverUrl = ref(cachedBanner.value || DEFAULT_COVER)
+
+// 封面图加载失败时回退默认图
+const onCoverError = () => {
+  if (coverUrl.value !== DEFAULT_COVER) {
+    coverUrl.value = DEFAULT_COVER
+    cachedBanner.value = ''
+  }
+}
 
 interface State {
   memos: Array<MemoDTO>
@@ -124,7 +133,16 @@ const state: State = reactive({
   totalPage: 0,
 })
 
-let user = ref<Partial<User>>({})
+// 初始直接读本地 userinfo 缓存,避免刷新时先用占位再切换导致闪烁
+let user = ref<Partial<User>>(
+  userinfo.value.avatarUrl || userinfo.value.displayName
+    ? {
+        avatarUrl: userinfo.value.avatarUrl,
+        displayName: userinfo.value.displayName,
+        bio: userinfo.value.bio,
+      }
+    : {}
+)
 const showInput = ref(false)
 const themeModelVal = useLocalStorage('themeModel', { theme: 'light' })
 const isDark = computed(() => themeModelVal.value.theme === 'dark')
@@ -171,15 +189,21 @@ onMounted(async () => {
   const { data, error } = await useMyFetch('/api/user/current').post().json()
   if (!error.value) {
     user.value = data.value
+    // 同步写回本地缓存,刷新时直接读取
+    userinfo.value = Object.assign(userinfo.value, data.value)
   }
 
-  // 读取后台配置的封面图
+  // 读取后台配置的封面图,并写入本地缓存
   const { data: cfg, error: cfgErr } = await useMyFetch('/api/sysConfig/').get().json()
   if (!cfgErr.value) {
     const configData = cfg.value as Array<{ key: string; value: string }>
     const banner = configData.find((r) => r.key === 'BANNER_URL')?.value
     if (banner) {
       coverUrl.value = banner
+      cachedBanner.value = banner
+    } else {
+      coverUrl.value = DEFAULT_COVER
+      cachedBanner.value = ''
     }
   }
 })

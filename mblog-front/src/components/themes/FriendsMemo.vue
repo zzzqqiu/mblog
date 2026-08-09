@@ -94,6 +94,15 @@
               <div class="i-carbon:chat"></div>
               <span v-if="props.memo.commentCount > 0">{{ props.memo.commentCount }}</span>
             </div>
+            <!-- 删除(作者本人或管理员) -->
+            <div class="op-btn hover:text-red-500" title="删除" v-if="canDelete">
+              <n-popconfirm :show-icon="false" @positive-click="removeMemo" negative-text="取消" positive-text="删除">
+                <template #trigger>
+                  <div class="i-carbon:trash-can"></div>
+                </template>
+                确定删除这条动态吗?
+              </n-popconfirm>
+            </div>
           </div>
         </div>
 
@@ -288,6 +297,22 @@ const removeComment = async (id: number) => {
     message.success('删除成功')
     await loadComments()
     props.memo.commentCount = Math.max(0, props.memo.commentCount - 1)
+  }
+}
+
+/* ---------------- 删除 ---------------- */
+// 作者本人或管理员可以删除
+const canDelete = computed(() => {
+  if (!userinfo.value.token) return false
+  return userinfo.value.role === 'ADMIN' || props.memo.userId === userinfo.value.userId
+})
+
+const removeMemo = async () => {
+  const { message } = createDiscreteApi(['message'])
+  const { error } = await useMyFetch(`/api/memo/remove?id=${props.memo.id}`).post().json()
+  if (!error.value) {
+    message.success('删除成功')
+    changedMemoBus.emit({ id: props.memo.id, deleteMemo: true })
   }
 }
 
